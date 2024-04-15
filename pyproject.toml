@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "test"
+version = "0.1.0"
+description = "Based on the understood requirements and prior information gathered through the interview and search process, the solution involves developing an image processing application. The core functionality of this application includes accepting an image file from the user, resizing the image to fit within specified dimensions and optionally cropping it to maintain the aspect ratio, and finally returning the resized image file to the user. The preferences for supporting PNG and SVG formats are noted, ensuring versatility and scalability in image handling. Maintaining the aspect ratio during resizing is essential for preserving the image's original visual integrity, as highlighted by the user. Additional features such as adjusting brightness and contrast, applying filters, and performing rotation and flipping have been considered to enhance the visual appeal and suitability of images for various contexts."
+authors = ["AutoGPT <info@agpt.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+pillow = "^9.2.0"
+bcrypt = "^3.2.0"
+fastapi = "^0.79.0"
+passlib = {version = "^1.7.4", extras = ["bcrypt"]}
+prisma = "*"
+pydantic = "*"
+python-dateutil = "^2.8.2"
+python-jose = {version = "^3.3.0", extras = ["cryptography"]}
+python-multipart = "^0.0.5"
+uvicorn = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

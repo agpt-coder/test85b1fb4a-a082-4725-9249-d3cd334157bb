@@ -1,0 +1,101 @@
+// datasource db defines the database connection settings.
+// It is configured for PostgreSQL and uses an environment variable for the connection URL.
+// The 'extensions' feature enables the use of PostgreSQL-specific data types.
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+}
+
+// generator db configures Prisma Client settings.
+// It is set up to use Prisma Client Python with asyncio interface and specific features.
+generator db {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  previewFeatures      = ["postgresqlExtensions"]
+}
+
+model User {
+  id                String                    @id @default(dbgenerated("gen_random_uuid()"))
+  email             String                    @unique
+  hashedPassword    String
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  role              Role                      @default(FREEUSER)
+  Images            ImageFile[]
+  ImageManipulation ImageManipulationRecord[]
+  Subscriptions     Subscription[]
+}
+
+model ImageFile {
+  id               String                    @id @default(dbgenerated("gen_random_uuid()"))
+  userId           String
+  format           ImageFormat
+  originalFilename String
+  storagePath      String
+  uploadedAt       DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  User             User                      @relation(fields: [userId], references: [id])
+  Manipulations    ImageManipulationRecord[]
+}
+
+model ImageManipulationRecord {
+  id           String           @id @default(dbgenerated("gen_random_uuid()"))
+  imageFileId  String
+  userId       String
+  manipulation ManipulationType
+  parameters   Json
+  createdAt    DateTime         @default(now())
+  ImageFile    ImageFile        @relation(fields: [imageFileId], references: [id])
+  User         User             @relation(fields: [userId], references: [id])
+}
+
+model Subscription {
+  id        String           @id @default(dbgenerated("gen_random_uuid()"))
+  userId    String
+  type      SubscriptionType
+  startDate DateTime         @default(now())
+  endDate   DateTime?
+  User      User             @relation(fields: [userId], references: [id])
+}
+
+model SystemEvent {
+  id        String    @id @default(dbgenerated("gen_random_uuid()"))
+  type      EventType
+  createdAt DateTime  @default(now())
+  details   Json
+}
+
+enum Role {
+  FREEUSER
+  PREMIUMUSER
+}
+
+enum ImageFormat {
+  PNG
+  SVG
+}
+
+enum ManipulationType {
+  RESIZE
+  CROP
+  ADJUST_BRIGHTNESS
+  ADJUST_CONTRAST
+  APPLY_FILTER
+  ROTATE
+  FLIP
+}
+
+enum SubscriptionType {
+  FREE
+  MONTHLY
+  YEARLY
+}
+
+enum EventType {
+  USER_SIGNUP
+  IMAGE_UPLOAD
+  MANIPULATION_REQUEST
+  SUBSCRIPTION_UPGRADE
+}
+
